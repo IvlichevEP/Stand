@@ -38,6 +38,8 @@
 #define OFF_10_PIN  GPIO_PIN_13
 #define ON_10_PIN   GPIO_PIN_14
 
+#define BREATH_PERIOD_MASK 0x20
+
 static bool EN_025_GEN = false;
 static bool EN_1_GEN = false;
 static bool EN_10_GEN = false;
@@ -206,7 +208,8 @@ int CmdDataSelect(QUEUE_TypeDef *q)
 		break;
 	case BREATH_PERIOD:
 		freq  = q->buffer;
-		HAL_SYSTICK_Config(SystemCoreClock / (1000 / freq)); //1=0.5kHz/16, 10=50Hz/16, 100=5Hz/16
+		//Period = (64 * freq) / 1000 [sec]
+		HAL_SYSTICK_Config(SystemCoreClock / (1000 / freq));
 		break;
 	case BREATH_GEN1:
 		/* Stop channel 2 */
@@ -289,16 +292,37 @@ void BreathTimer(void)
 {
 	if (EN_025_GEN)
 	{
-		if ((breath_count & 0x10) == 0x10)
+		//HAL_GPIO_WritePin(BRATH_PORT, ON_025_PIN, GPIO_PIN_SET);
+		if ((breath_count & BREATH_PERIOD_MASK) == 0x00)
 		{
-		    HAL_GPIO_WritePin(BRATH_PORT, OFF_025_PIN, GPIO_PIN_SET);
-		    HAL_GPIO_WritePin(BRATH_PORT, ON_025_PIN, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(BRATH_PORT, OFF_025_PIN, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(BRATH_PORT, ON_025_PIN, GPIO_PIN_RESET);
 		}
 		else
 		{
+			HAL_GPIO_WritePin(BRATH_PORT, OFF_025_PIN, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(BRATH_PORT, ON_025_PIN, GPIO_PIN_SET);
-		    HAL_GPIO_WritePin(BRATH_PORT, OFF_025_PIN, GPIO_PIN_RESET);
 		}
+//		if ((breath_count & 0x18) == 0x00) //reset
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_025_PIN, GPIO_PIN_SET);
+//		    HAL_GPIO_WritePin(BRATH_PORT, ON_025_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x08)
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_025_PIN, GPIO_PIN_RESET);
+//		    HAL_GPIO_WritePin(BRATH_PORT, ON_025_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x10) //reset
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_025_PIN, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(BRATH_PORT, ON_025_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x18)
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_025_PIN, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(BRATH_PORT, ON_025_PIN, GPIO_PIN_RESET);
+//		}
 	}
 	else
 	{
@@ -308,16 +332,38 @@ void BreathTimer(void)
 
 	if (EN_1_GEN)
 	{
-		if ((breath_count & 0x10) == 0x10)
+		//HAL_GPIO_WritePin(BRATH_PORT, ON_1_PIN, GPIO_PIN_SET);
+		if ((breath_count & BREATH_PERIOD_MASK) == 0x00)
 		{
-		    HAL_GPIO_WritePin(BRATH_PORT, OFF_1_PIN, GPIO_PIN_SET);
-		    HAL_GPIO_WritePin(BRATH_PORT, ON_1_PIN, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(BRATH_PORT, OFF_1_PIN, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(BRATH_PORT, ON_1_PIN, GPIO_PIN_RESET);
 		}
 		else
 		{
+			HAL_GPIO_WritePin(BRATH_PORT, OFF_1_PIN, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(BRATH_PORT, ON_1_PIN, GPIO_PIN_SET);
-		    HAL_GPIO_WritePin(BRATH_PORT, OFF_1_PIN, GPIO_PIN_RESET);
 		}
+
+//		if ((breath_count & 0x18) == 0x00) //reset
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_1_PIN, GPIO_PIN_SET);
+//		    HAL_GPIO_WritePin(BRATH_PORT, ON_1_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x08)
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_1_PIN, GPIO_PIN_RESET);
+//		    HAL_GPIO_WritePin(BRATH_PORT, ON_1_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x10) //reset
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_1_PIN, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(BRATH_PORT, ON_1_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x18)
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_1_PIN, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(BRATH_PORT, ON_1_PIN, GPIO_PIN_RESET);
+//		}
 	}
 	else
 	{
@@ -327,16 +373,37 @@ void BreathTimer(void)
 
 	if (EN_10_GEN)
 	{
-		if ((breath_count & 0x10) == 0x10)
+		//HAL_GPIO_WritePin(BRATH_PORT, ON_10_PIN, GPIO_PIN_SET);
+		if ((breath_count & BREATH_PERIOD_MASK) == 0x00)
 		{
-		    HAL_GPIO_WritePin(BRATH_PORT, OFF_10_PIN, GPIO_PIN_SET);
-		    HAL_GPIO_WritePin(BRATH_PORT, ON_10_PIN, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(BRATH_PORT, OFF_10_PIN, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(BRATH_PORT, ON_10_PIN, GPIO_PIN_RESET);
 		}
 		else
 		{
+			HAL_GPIO_WritePin(BRATH_PORT, OFF_10_PIN, GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(BRATH_PORT, ON_10_PIN, GPIO_PIN_SET);
-		    HAL_GPIO_WritePin(BRATH_PORT, OFF_10_PIN, GPIO_PIN_RESET);
 		}
+//		if ((breath_count & 0x18) == 0x00) //reset
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_10_PIN, GPIO_PIN_SET);
+//		    HAL_GPIO_WritePin(BRATH_PORT, ON_10_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x08)
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_10_PIN, GPIO_PIN_RESET);
+//		    HAL_GPIO_WritePin(BRATH_PORT, ON_10_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x10) //reset
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_10_PIN, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(BRATH_PORT, ON_10_PIN, GPIO_PIN_SET);
+//		}
+//		else if ((breath_count & 0x18) == 0x18)
+//		{
+//			HAL_GPIO_WritePin(BRATH_PORT, OFF_10_PIN, GPIO_PIN_SET);
+//			HAL_GPIO_WritePin(BRATH_PORT, ON_10_PIN, GPIO_PIN_RESET);
+//		}
 	}
 	else
 	{
