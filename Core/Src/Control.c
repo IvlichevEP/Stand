@@ -209,7 +209,7 @@ int CmdDataSelect(QUEUE_TypeDef *q)
 	case BREATH_PERIOD:
 		freq  = q->buffer;
 		//Period = (64 * freq) / 1000 [sec]
-		HAL_SYSTICK_Config(SystemCoreClock / (1000 / freq));
+		HAL_SYSTICK_Config(freq * (SystemCoreClock / 1000));
 		break;
 	case BREATH_GEN1:
 		/* Stop channel 2 */
