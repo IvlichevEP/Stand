@@ -345,6 +345,9 @@ static void Get_SerialNum(void)
 
   deviceserial0 += deviceserial2;
 
+  deviceserial0 = 0x00000002;
+  deviceserial1 = 0x00000000;
+
   if (deviceserial0 != 0)
   {
     IntToUnicode(deviceserial0, &USBD_StringSerial[2], 8);
